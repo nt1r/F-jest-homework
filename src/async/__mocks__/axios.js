@@ -4,4 +4,9 @@ export default {
       data: "data",
     })
   ),
+  post: jest.fn().mockImplementation(() =>
+    Promise.resolve({
+      data: "data",
+    })
+  ),
 };
