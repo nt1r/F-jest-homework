@@ -2,11 +2,8 @@ import VaccineTest from "../vaccineTest";
 import Recipient from "../recipient";
 import Covid19Vaccine from "../covid19Vaccine";
 
-let mockHasAntibodies = true;
 const mockAcceptInjection = jest.fn();
-const mockGetHasAntibodies = jest
-  .fn()
-  .mockImplementation(() => mockHasAntibodies);
+const mockGetHasAntibodies = jest.fn();
 
 jest.mock("../recipient", () => {
   // mock class实现
@@ -14,7 +11,10 @@ jest.mock("../recipient", () => {
     return {
       acceptInjection: mockAcceptInjection,
       getHasAntibodies: mockGetHasAntibodies,
-      hasAntibodies: mockHasAntibodies,
+      // TODO 我们已经mock了使用hasAntibodies的方法getHasAntibodies()。
+      // 那就不需要，也不应该在去mock这个class上面的field了
+
+      // hasAntibodies: mockHasAntibodies,
     };
   });
 });
@@ -23,6 +23,9 @@ beforeEach(() => {
   // clear mock here
   Recipient.mockClear();
   mockAcceptInjection.mockClear();
+  // TODO feedback: 在describe("test"，）里面，有2个测试，且都会用到mockGetHasAntibodies。
+  // 我们需要在下面这行代码来清楚前面的测试跑过之后对后面测试的影响。
+  mockGetHasAntibodies.mockReset();
 });
 
 describe("inject", () => {
@@ -44,7 +47,9 @@ describe("test", () => {
   test("should get Success if recipient has antibodies", () => {
     // assign
     const vaccineTest = new VaccineTest();
-    mockHasAntibodies = true;
+    // mockHasAntibodies = true;
+    // TODO 我们应该去mock这个class的function,而不是去mock这个class的field
+    mockGetHasAntibodies.mockImplementation(() => true);
     // act
     const actual = vaccineTest.test();
     // assert
@@ -60,7 +65,9 @@ describe("test", () => {
   test("should get Failed if recipient has no antibodies", () => {
     // assign
     const vaccineTest = new VaccineTest();
-    mockHasAntibodies = false;
+    // mockHasAntibodies = false;
+    // TODO 我们应该去mock这个class的function,而不是去mock这个class的field
+    mockGetHasAntibodies.mockImplementation(() => false);
     // act
     const actual = vaccineTest.test();
     // assert
